@@ -12,10 +12,20 @@ RUN code-server --install-extension ms-python.python \
 
 # Switch to root to copy & chmod
 USER root
+
+RUN apt-get update && apt-get install -y --no-install-recommends \
+    build-essential \
+    gdb \
+    cmake \
+    && rm -rf /var/lib/apt/lists/*
+
 COPY start.sh /usr/local/bin/start.sh
 RUN chmod +x /usr/local/bin/start.sh
 
 # Switch back to coder
 USER coder
+
+RUN mkdir -p /home/coder/.vscode
+COPY ./C /home/coder/.vscode
 
 ENTRYPOINT ["/usr/local/bin/start.sh"]
