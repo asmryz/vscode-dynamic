@@ -13,14 +13,20 @@ func main() {
 	}
 
 	student := os.Args[1]
-	password := student + "123" // simple password rule
+	password := student + "123" // simple password
 
-	cmd := exec.Command("docker", "run", "-d",
-		"--name", student,
-		"--network=pwd-setup_pwdnet",
-		"-e", "PASSWORD="+password,
-		"-v", "./students/"+student+":/config",
-		"lscr.io/linuxserver/code-server:latest")
+	// create student folder if not exists
+	if _, err := os.Stat("./students/" + student); os.IsNotExist(err) {
+		os.MkdirAll("./students/"+student, 0755)
+	}
+cmd := exec.Command("docker", "run", "-d",
+    "--name", student,
+    "--network=pwd-setup_pwdnet",
+    "-e", "PASSWORD="+password,
+    "-v", "./students/"+student+"/projects:/home/coder/projects",
+    "code-server-image",
+    "--bind-addr", "0.0.0.0:8443", "/home/coder")
+ // Dockerfile.code-server se build image
 
 	cmd.Stdout = os.Stdout
 	cmd.Stderr = os.Stderr
