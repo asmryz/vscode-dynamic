@@ -1,0 +1,10 @@
+FROM golang:1.23 as builder
+WORKDIR /app
+COPY proxy.go .
+RUN go build -o proxy proxy.go
+
+FROM debian:bookworm-slim
+WORKDIR /app
+COPY --from=builder /app/proxy .
+EXPOSE 80
+CMD ["./proxy"]
